@@ -2,8 +2,10 @@
 
 export default function Home() {
   return (
-    <div>
-      안녕하세요.
-    </div>
+    <>
+      <div className="flex-1 flex items-center justify-center">
+        <span>명언앱입니다.</span>
+      </div>
+    </>
   );
 }
