@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased!bg-red-500 border-2 border-blue-500`}
       >
         <header>
           <nav className="flex gap-2">
@@ -37,6 +37,6 @@ export default function RootLayout({
         <main>{children}</main>
         <footer>Footer</footer>
       </body>
-    </html>
+    </html >
   );
 }
