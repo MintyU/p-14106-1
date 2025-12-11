@@ -37,10 +37,22 @@ export default function EditPage({ params }: { params: Promise<{ id: number }> }
       return;
     }
 
+    if (titleInput.value.length < 2) {
+      alert("제목을 2자 이상 입력해주세요.");
+      titleInput.focus();
+      return;
+    }
+
     contentInput.value = contentInput.value.trim();
 
     if (contentInput.value.length === 0) {
       alert("내용을 입력해주세요.");
+      contentInput.focus();
+      return;
+    }
+
+    if (contentInput.value.length < 2) {
+      alert("내용을 2자 이상 입력해주세요.");
       contentInput.focus();
       return;
     }
@@ -69,6 +81,7 @@ export default function EditPage({ params }: { params: Promise<{ id: number }> }
           placeholder="제목"
           autoFocus
           defaultValue={post.title}
+          maxLength={100}
         />
 
         <textarea
@@ -76,6 +89,8 @@ export default function EditPage({ params }: { params: Promise<{ id: number }> }
           name="content"
           placeholder="내용"
           defaultValue={post.content}
+          rows={10}
+          maxLength={100}
         />
         <button className="bg-black text-white p-2 rounded" type="submit">저장</button>
       </form>

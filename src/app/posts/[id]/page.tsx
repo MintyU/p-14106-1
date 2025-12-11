@@ -51,8 +51,8 @@ export default function Page() {
       return;
     }
 
-    if (content.value.length > 100 || content.value.length < 2) {
-      alert("댓글 내용은 2자 이상 100자 이하로 입력해주세요.");
+    if (content.value.length < 2) {
+      alert("댓글 내용을 2자 이상 입력해주세요.");
       content.focus();
       return;
     }
@@ -109,7 +109,8 @@ export default function Page() {
           className="border border-gray-300 rounded p-2"
           name="content"
           cols={80}
-          rows={3}
+          rows={5}
+          maxLength={100}
           placeholder="댓글 내용을 입력해주세요."
         />
         <button type="submit" className="bg-white text-blue-500 border border-blue-500 p-2 rounded">
