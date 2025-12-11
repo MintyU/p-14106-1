@@ -1,17 +1,15 @@
 "use client";
 
+import { apiFetch } from "@/lib/backend/client";
 import { PostDto } from "@/type/post";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-
-const NEXT_PUBLIC_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function Page() {
   const [posts, setPosts] = useState<PostDto[]>([]);
 
   useEffect(() => {
-    fetch(`${NEXT_PUBLIC_API_BASE_URL}/api/v1/posts`)
-      .then((response) => response.json() as Promise<PostDto[]>)
+    apiFetch(`/api/v1/posts`)
       .then(setPosts);
   }, []);
 

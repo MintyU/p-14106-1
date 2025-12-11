@@ -1,10 +1,9 @@
 "use client";
 
+import { apiFetch } from "@/lib/backend/client";
 import { PostWithContentDto } from "@/type/post";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-
-const NEXT_PUBLIC_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function Page() {
   const { id } = useParams<{ id: string }>();
@@ -12,8 +11,7 @@ export default function Page() {
   const [post, setPost] = useState<PostWithContentDto | null>(null);
 
   useEffect(() => {
-    fetch(`${NEXT_PUBLIC_API_BASE_URL}/api/v1/posts/${id}`)
-      .then((res) => res.json() as Promise<PostWithContentDto>)
+    apiFetch(`/api/v1/posts/${id}`)
       .then(setPost);
   }, []);
 
