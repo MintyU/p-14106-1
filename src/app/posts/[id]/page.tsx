@@ -31,9 +31,45 @@ export default function Page() {
       .then((data) => {
         alert(data.msg);
 
-        if (postComments != null) {
-          setPostComments(postComments.filter((comment) => comment.id != commentId));
-        }
+        if (postComments == null) return;
+
+        setPostComments(postComments.filter((comment) => comment.id != commentId));
+      });
+  };
+
+  const writePostComment = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const form = e.target as HTMLFormElement;
+    const content = form.elements.namedItem("content") as HTMLTextAreaElement;
+
+    content.value = content.value.trim();
+
+    if (content.value.length === 0) {
+      alert("댓글 내용을 입력해주세요.");
+      content.focus();
+      return;
+    }
+
+    if (content.value.length > 100 || content.value.length < 2) {
+      alert("댓글 내용은 2자 이상 100자 이하로 입력해주세요.");
+      content.focus();
+      return;
+    }
+
+    apiFetch(`/api/v1/posts/${id}/comments`, {
+      method: "POST",
+      body: JSON.stringify({ content: content.value }),
+    })
+      .then((data) => {
+
+        alert(data.msg);
+        content.value = "";
+
+        if (postComments == null) return;
+
+        setPostComments([...postComments, data.data]);
+        content.focus();
       });
   };
 
@@ -66,6 +102,21 @@ export default function Page() {
         </Link>
       </div>
 
+      <h2>댓글 작성</h2>
+
+      <form onSubmit={writePostComment} className="flex gap-2">
+        <textarea
+          className="border border-gray-300 rounded p-2"
+          name="content"
+          cols={80}
+          rows={3}
+          placeholder="댓글 내용을 입력해주세요."
+        />
+        <button type="submit" className="bg-white text-blue-500 border border-blue-500 p-2 rounded">
+          작성
+        </button>
+      </form>
+
       <h2>댓글 목록</h2>
 
       {postComments == null && <div>댓글 로딩중...</div>}
@@ -76,7 +127,7 @@ export default function Page() {
         <ul>
           {postComments.map((comment) => (
             <li key={comment.id}>
-              {comment.content}
+              {comment.id} : {comment.content}
               <button onClick={() =>
                 confirm(`${comment.id}번 댓글을 정말로 삭제하시겠습니까?`) &&
                 deletePostComment(post.id, comment.id)
