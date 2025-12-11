@@ -2,10 +2,12 @@
 
 import { apiFetch } from "@/lib/backend/client";
 import { PostWithContentDto } from "@/type/post";
+import { useRouter } from "next/navigation";
 import { use } from "react";
 import { useState, useEffect } from "react";
 
 export default function EditPage({ params }: { params: Promise<{ id: number }> }) {
+  const router = useRouter();
 
   const { id } = use(params);
 
@@ -20,11 +22,47 @@ export default function EditPage({ params }: { params: Promise<{ id: number }> }
     return <div>로딩중...</div>;
   }
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const form = e.target as HTMLFormElement;
+    const titleInput = form.elements.namedItem("title") as HTMLInputElement;
+    const contentInput = form.elements.namedItem("content") as HTMLTextAreaElement;
+
+    titleInput.value = titleInput.value.trim();
+
+    if (titleInput.value.length === 0) {
+      alert("제목을 입력해주세요.");
+      titleInput.focus();
+      return;
+    }
+
+    contentInput.value = contentInput.value.trim();
+
+    if (contentInput.value.length === 0) {
+      alert("내용을 입력해주세요.");
+      contentInput.focus();
+      return;
+    }
+
+    apiFetch(`/api/v1/posts/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        title: titleInput.value,
+        content: contentInput.value,
+      }),
+    })
+      .then((data) => {
+        alert(data.msg);
+        router.replace(`/posts/${id}`);
+      })
+  };
+
   return (
     <>
       <h1>{id}번 글 수정</h1>
 
-      <form className="flex flex-col gap-2 p-2 border border-gray-300 rounded">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2 p-2 border border-gray-300 rounded">
         <input
           type="text"
           name="title"
