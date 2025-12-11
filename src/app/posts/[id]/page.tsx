@@ -24,6 +24,19 @@ export default function Page() {
       });
   };
 
+  const deletePostComment = (id: number, commentId: number) => {
+    apiFetch(`/api/v1/posts/${id}/comments/${commentId}`, {
+      method: "DELETE",
+    })
+      .then((data) => {
+        alert(data.msg);
+
+        if (postComments != null) {
+          setPostComments(postComments.filter((comment) => comment.id != commentId));
+        }
+      });
+  };
+
   useEffect(() => {
     apiFetch(`/api/v1/posts/${id}`)
       .then(setPost);
@@ -64,6 +77,12 @@ export default function Page() {
           {postComments.map((comment) => (
             <li key={comment.id}>
               {comment.content}
+              <button onClick={() =>
+                confirm(`${comment.id}번 댓글을 정말로 삭제하시겠습니까?`) &&
+                deletePostComment(post.id, comment.id)
+              }>
+                삭제
+              </button>
             </li>
           ))}
         </ul>
