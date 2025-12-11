@@ -1,6 +1,11 @@
 "use client";
 
+import { apiFetch } from "@/lib/backend/client";
+import { useRouter } from "next/navigation";
+
 export default function WritePage() {
+  const router = useRouter();
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -24,19 +29,16 @@ export default function WritePage() {
       return;
     }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/posts`, {
+    apiFetch(`/api/v1/posts`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
       body: JSON.stringify({
         title: titleInput.value,
         content: contentInput.value,
       }),
     })
-      .then((res) => res.json())
       .then((data) => {
         alert(data.msg);
+        router.replace(`/posts/${data.data.id}`);
       })
   };
 
@@ -46,7 +48,7 @@ export default function WritePage() {
       <h1>글쓰기</h1>
 
       <form className="flex flex-col gap-2 p-2 border border-gray-300 rounded" onSubmit={handleSubmit}>
-        <input className="border border-gray-300 rounded p-2" type="text" name="title" placeholder="제목" />
+        <input className="border border-gray-300 rounded p-2" type="text" name="title" placeholder="제목" autoFocus />
         <textarea className="border border-gray-300 rounded p-2" name="content" placeholder="내용"></textarea>
         <button className="bg-black text-white p-2 rounded" type="submit">저장</button>
       </form>
