@@ -25,10 +25,10 @@ export default function Page() {
       {posts.length === 0 && <div>글이 없습니다.</div>}
 
       {posts.length > 0 && (
-        <ul>
+        <ul className="flex flex-col gap-2">
           {posts.map((post) => (
-            <li key={post.id}>
-              <Link href={`/posts/${post.id}`}>{post.title}</Link>
+            <li key={post.id} className="p-2 border border-gray-300 rounded hover:bg-gray-100">
+              <Link href={`/posts/${post.id}`} className="hover:underline">{post.title}</Link>
             </li>
           ))}
         </ul>

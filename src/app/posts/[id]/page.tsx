@@ -75,10 +75,16 @@ export default function Page() {
 
   useEffect(() => {
     apiFetch(`/api/v1/posts/${id}`)
-      .then(setPost);
+      .then(setPost)
+      .catch((e) => {
+        alert(`${e.resultCode} : ${e.msg}`);
+      });
 
     apiFetch(`/api/v1/posts/${id}/comments`)
-      .then(setPostComments);
+      .then(setPostComments)
+      .catch((e) => {
+        alert(`${e.resultCode} : ${e.msg}`);
+      });
   }, []);
 
   if (post == null) {
@@ -94,26 +100,25 @@ export default function Page() {
       <div style={{ whiteSpace: "pre-line" }}>{post.content}</div>
 
       <div className="flex gap-2">
-        <button className="bg-white text-red-500 border border-red-500 p-2 rounded" onClick={() => confirm(`${post.id}번 글을 정말로 삭제하시겠습니까?`) && deletePost(post.id)}>
+        <button className="bg-white text-red-500 border border-red-500 p-2 rounded hover:bg-red-100" onClick={() => confirm(`${post.id}번 글을 정말로 삭제하시겠습니까?`) && deletePost(post.id)}>
           삭제
         </button>
-        <Link href={`/posts/${post.id}/edit`} className="bg-white text-blue-500 border border-blue-500 p-2 rounded">
+        <Link href={`/posts/${post.id}/edit`} className="bg-white text-blue-500 border border-blue-500 p-2 rounded hover:bg-blue-100">
           수정
         </Link>
       </div>
 
       <h2>댓글 작성</h2>
 
-      <form onSubmit={writePostComment} className="flex gap-2">
+      <form onSubmit={writePostComment} className="flex gap-2 border-b border-gray-300 pb-5">
         <textarea
-          className="border border-gray-300 rounded p-2"
+          className="border border-gray-300 rounded p-2 w-full"
           name="content"
-          cols={80}
           rows={5}
           maxLength={100}
           placeholder="댓글 내용을 입력해주세요."
         />
-        <button type="submit" className="bg-white text-blue-500 border border-blue-500 p-2 rounded">
+        <button type="submit" className="bg-white text-blue-500 border border-blue-500 p-2 rounded hover:bg-blue-100 w-24">
           작성
         </button>
       </form>
@@ -125,14 +130,18 @@ export default function Page() {
       {postComments != null && postComments.length == 0 && <div>댓글이 없습니다.</div>}
 
       {postComments != null && postComments.length > 0 && (
-        <ul>
+        <ul className="flex flex-col gap-2">
           {postComments.map((comment) => (
-            <li key={comment.id}>
-              {comment.id} : {comment.content}
-              <button onClick={() =>
-                confirm(`${comment.id}번 댓글을 정말로 삭제하시겠습니까?`) &&
-                deletePostComment(post.id, comment.id)
-              }>
+            <li key={comment.id} className="flex gap-2 items-center justify-between">
+              <div>
+                {comment.id} : {comment.content}
+              </div>
+              <button
+                className="bg-white text-red-500 border border-red-500 p-2 rounded hover:bg-red-100"
+                onClick={() =>
+                  confirm(`${comment.id}번 댓글을 정말로 삭제하시겠습니까?`) &&
+                  deletePostComment(post.id, comment.id)
+                }>
                 삭제
               </button>
             </li>

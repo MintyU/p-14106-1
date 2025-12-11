@@ -26,15 +26,15 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col p-2`}
       >
         <header>
           <nav className="flex gap-2">
-            <Link href="/" className="p-2 rounded hover:bg-gray-100">메인</Link>
-            <Link href="/posts" className="p-2 rounded hover:bg-gray-100">글 목록</Link>
+            <Link href="/" className="p-2 border border-gray-300 rounded hover:bg-gray-100">메인</Link>
+            <Link href="/posts" className="p-2 border border-gray-300 rounded hover:bg-gray-100">글 목록</Link>
           </nav>
         </header>
-        <main className="flex-1 flex flex-col">{children}</main>
+        <main className="flex-1 flex flex-col p-2 gap-2">{children}</main>
         <footer className="text-center p-2">Footer</footer>
       </body>
     </html >
