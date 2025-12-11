@@ -1,16 +1,27 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 export default function Page() {
+  const [posts, setPosts] = useState<{ id: number; title: string }[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/v1/posts")
+      .then((response) => response.json())
+      .then(setPosts);
+  }, []);
+
+
   return (
     <>
       <h1>글 목록</h1>
 
+      {posts.length === 0 && <div>로딩중...</div>}
+
       <ul>
-        <li>글 1</li>
-        <li>글 2</li>
-        <li>글 3</li>
-        <li>글 4</li>
-        <li>글 5</li>
+        {posts.map((post) => (
+          <li key={post.id}>{post.title}</li>
+        ))}
       </ul>
     </>
   );
