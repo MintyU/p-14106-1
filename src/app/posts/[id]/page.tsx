@@ -1,20 +1,17 @@
 "use client";
 
+import { PostWithContentDto } from "@/type/post";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 
 export default function Page() {
   const { id } = useParams<{ id: string }>();
 
-  const [post, setPost] = useState<{
-    id: number;
-    title: string;
-    content: string;
-  } | null>(null);
+  const [post, setPost] = useState<PostWithContentDto | null>(null);
 
   useEffect(() => {
     fetch(`http://localhost:8080/api/v1/posts/${id}`)
-      .then((res) => res.json())
+      .then((res) => res.json() as Promise<PostWithContentDto>)
       .then(setPost);
   }, []);
 
