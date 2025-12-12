@@ -122,32 +122,19 @@ function PostInfo({ postState }: { postState: ReturnType<typeof usePost> }) {
   );
 }
 
-function PostCommentWriteAndList({
+function PostCommentWrite({
   id,
   postCommentsState,
 }: {
   id: number;
   postCommentsState: ReturnType<typeof usePostComments>
 }) {
-  const { postComments, deleteComment: _deleteComment, writeComment } = postCommentsState;
+  const { writeComment } = postCommentsState;
 
-  if (postComments == null) return <div>로딩중...</div>;
-
-  const deleteComment = (commentId: number) => {
-    if (!confirm(`${commentId}번 댓글을 정말로 삭제하시겠습니까?`)) return;
-
-    _deleteComment(id, commentId, (data) => {
-      alert(data.msg);
-    });
-  };
-
-  const handleCommentWriteFormSubmit = (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const form = e.target as HTMLFormElement;
-
     const contentTextarea = form.elements.namedItem(
       "content"
     ) as HTMLTextAreaElement;
@@ -173,45 +160,93 @@ function PostCommentWriteAndList({
   };
 
   return (
+    <form className="p-2 flex gap-2 border-b border-gray-300 pb-6" onSubmit={handleSubmit}>
+      <textarea
+        className="border p-2 rounded flex-1"
+        name="content"
+        placeholder="댓글 내용"
+        maxLength={100}
+        rows={5}
+      />
+      <button className="p-2 rounded border w-24 hover:bg-gray-100" type="submit">
+        작성
+      </button>
+    </form>
+  );
+}
+
+function PostCommentList({
+  id,
+  postCommentsState,
+}: {
+  id: number;
+  postCommentsState: ReturnType<typeof usePostComments>
+}) {
+  const { postComments, deleteComment: _deleteComment } = postCommentsState;
+
+  const deleteComment = (commentId: number) => {
+    if (!confirm(`${commentId}번 댓글을 정말로 삭제하시겠습니까?`)) return;
+
+    _deleteComment(id, commentId, (data) => {
+      alert(data.msg);
+    });
+  };
+
+  return (
     <>
-      <h2>댓글 작성</h2>
-
-      <form className="p-2 flex gap-2 border-b border-gray-300 pb-6" onSubmit={handleCommentWriteFormSubmit}>
-        <textarea
-          className="border p-2 rounded flex-1"
-          name="content"
-          placeholder="댓글 내용"
-          maxLength={100}
-          rows={5}
-        />
-        <button className="p-2 rounded border w-24 hover:bg-gray-100" type="submit">
-          작성
-        </button>
-      </form>
-
       <h2>댓글 목록</h2>
 
-      {postComments == null && <div>댓글 로딩중...</div>}
+      {
+        postComments != null && postComments.length == 0 && (
+          <div>댓글이 없습니다.</div>
+        )
+      }
 
-      {postComments != null && postComments.length == 0 && (
-        <div>댓글이 없습니다.</div>
-      )}
+      {
+        postComments != null && postComments.length > 0 && (
+          <ul className="flex flex-col gap-2">
+            {postComments.map((comment) => (
+              <li key={comment.id} className="flex gap-2 items-center justify-between border-gray-300 border p-2 rounded">
+                {comment.id} : {comment.content}
+                <button
+                  className="p-2 rounded border border-red-500 text-red-500 hover:bg-red-50"
+                  onClick={() => deleteComment(comment.id)}
+                >
+                  삭제
+                </button>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </>
+  );
+}
 
-      {postComments != null && postComments.length > 0 && (
-        <ul className="flex flex-col gap-2">
-          {postComments.map((comment) => (
-            <li key={comment.id} className="flex gap-2 items-center justify-between border-gray-300 border p-2 rounded">
-              {comment.id} : {comment.content}
-              <button
-                className="p-2 rounded border border-red-500 text-red-500 hover:bg-red-50"
-                onClick={() => deleteComment(comment.id)}
-              >
-                삭제
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+function PostCommentWriteAndList({
+  id,
+  postCommentsState,
+}: {
+  id: number;
+  postCommentsState: ReturnType<typeof usePostComments>
+}) {
+  const { postComments, deleteComment: _deleteComment } = postCommentsState;
+
+  if (postComments == null) return <div>로딩중...</div>;
+
+  const deleteComment = (commentId: number) => {
+    if (!confirm(`${commentId}번 댓글을 정말로 삭제하시겠습니까?`)) return;
+
+    _deleteComment(id, commentId, (data) => {
+      alert(data.msg);
+    });
+  };
+
+  return (
+    <>
+      <PostCommentWrite id={id} postCommentsState={postCommentsState} />
+
+      <PostCommentList id={id} postCommentsState={postCommentsState} />
     </>
   );
 }
