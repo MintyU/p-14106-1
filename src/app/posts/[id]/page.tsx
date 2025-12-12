@@ -3,7 +3,7 @@
 import { apiFetch } from "@/lib/backend/client";
 import type { PostCommentDto, PostWithContentDto } from "@/type/post";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 
 function usePost(id: number) {
@@ -218,8 +218,9 @@ function PostCommentWriteAndList({
   );
 }
 
-export default function Page({ params }: { params: Promise<{ id: number }> }) {
-  const { id } = use(params);
+export default function Page() {
+  const { id: idStr } = useParams<{ id: string }>();
+  const id = Number(idStr);
 
   const { post, deletePost } = usePost(id);
 

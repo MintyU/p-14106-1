@@ -3,13 +3,14 @@
 import { apiFetch } from "@/lib/backend/client";
 import { PostWithContentDto } from "@/type/post";
 import { useRouter } from "next/navigation";
-import { use } from "react";
+import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
-export default function EditPage({ params }: { params: Promise<{ id: number }> }) {
+export default function EditPage() {
   const router = useRouter();
 
-  const { id } = use(params);
+  const { id: idStr } = useParams<{ id: string }>();
+  const id = Number(idStr);
 
   const [post, setPost] = useState<PostWithContentDto | null>(null);
 
