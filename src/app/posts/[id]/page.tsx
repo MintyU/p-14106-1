@@ -84,14 +84,7 @@ function usePostComments(id: number) {
   };
 }
 
-function PostInfo({
-  postState,
-}: {
-  postState: {
-    post: PostWithContentDto | null;
-    deletePost: (id: number, onSuccess: () => void) => void;
-  };
-}) {
+function PostInfo({ postState }: { postState: ReturnType<typeof usePost> }) {
   const router = useRouter();
   const { post, deletePost } = postState;
 
@@ -128,19 +121,7 @@ function PostCommentWriteAndList({
   postCommentsState,
 }: {
   id: number;
-  postCommentsState: {
-    postComments: PostCommentDto[] | null;
-    deleteComment: (
-      id: number,
-      commentId: number,
-      onSuccess: (data: any) => void
-    ) => void;
-    writeComment: (
-      id: number,
-      content: string,
-      onSuccess: (data: any) => void
-    ) => void;
-  };
+  postCommentsState: ReturnType<typeof usePostComments>
 }) {
   const { postComments, deleteComment, writeComment } = postCommentsState;
 
@@ -181,15 +162,15 @@ function PostCommentWriteAndList({
     <>
       <h2>댓글 작성</h2>
 
-      <form className="p-2" onSubmit={handleCommentWriteFormSubmit}>
+      <form className="p-2 flex gap-2" onSubmit={handleCommentWriteFormSubmit}>
         <textarea
-          className="border p-2 rounded"
+          className="border p-2 rounded flex-1"
           name="content"
           placeholder="댓글 내용"
           maxLength={100}
           rows={5}
         />
-        <button className="p-2 rounded border" type="submit">
+        <button className="p-2 rounded border w-24" type="submit">
           작성
         </button>
       </form>
@@ -203,9 +184,9 @@ function PostCommentWriteAndList({
       )}
 
       {postComments != null && postComments.length > 0 && (
-        <ul>
+        <ul className="flex flex-col gap-2">
           {postComments.map((comment) => (
-            <li key={comment.id}>
+            <li key={comment.id} className="flex gap-2 items-center justify-between border-gray-300 border p-2 rounded">
               {comment.id} : {comment.content}
               <button
                 className="p-2 rounded border"
