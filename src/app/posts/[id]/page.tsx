@@ -100,21 +100,24 @@ function PostInfo({ postState }: { postState: ReturnType<typeof usePost> }) {
 
   return (
     <>
-      <div>번호 : {post.id}</div>
-      <div>제목: {post.title}</div>
-      <div style={{ whiteSpace: "pre-line" }}>{post.content}</div>
+      <div className="mb-6 border border-gray-300 p-2 rounded">
+        <div className="mb-2">번호 : {post.id}</div>
+        <div className="mb-2">제목: {post.title}</div>
+        <div className="mb-2" style={{ whiteSpace: "pre-line" }}>{post.content}</div>
 
-      <div className="flex gap-2">
-        <button
-          className="p-2 rounded border"
-          onClick={deletePost}
-        >
-          삭제
-        </button>
-        <Link className="p-2 rounded border" href={`/posts/${post.id}/edit`}>
-          수정
-        </Link>
-      </div >
+
+        <div className="flex gap-2 justify-end">
+          <button
+            className="p-2 rounded border border-red-500 text-red-500 hover:bg-red-50"
+            onClick={deletePost}
+          >
+            삭제
+          </button>
+          <Link className="p-2 rounded border border-blue-500 text-blue-500 hover:bg-blue-50" href={`/posts/${post.id}/edit`}>
+            수정
+          </Link>
+        </div>
+      </div>
     </>
   );
 }
@@ -173,7 +176,7 @@ function PostCommentWriteAndList({
     <>
       <h2>댓글 작성</h2>
 
-      <form className="p-2 flex gap-2" onSubmit={handleCommentWriteFormSubmit}>
+      <form className="p-2 flex gap-2 border-b border-gray-300 pb-6" onSubmit={handleCommentWriteFormSubmit}>
         <textarea
           className="border p-2 rounded flex-1"
           name="content"
@@ -181,7 +184,7 @@ function PostCommentWriteAndList({
           maxLength={100}
           rows={5}
         />
-        <button className="p-2 rounded border w-24" type="submit">
+        <button className="p-2 rounded border w-24 hover:bg-gray-100" type="submit">
           작성
         </button>
       </form>
@@ -200,7 +203,7 @@ function PostCommentWriteAndList({
             <li key={comment.id} className="flex gap-2 items-center justify-between border-gray-300 border p-2 rounded">
               {comment.id} : {comment.content}
               <button
-                className="p-2 rounded border"
+                className="p-2 rounded border border-red-500 text-red-500 hover:bg-red-50"
                 onClick={() => deleteComment(comment.id)}
               >
                 삭제
