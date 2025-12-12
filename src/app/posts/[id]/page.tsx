@@ -29,6 +29,61 @@ function usePost(id: number) {
   };
 }
 
+function usePostComments(id: number) {
+  const [postComments, setPostComments] = useState<PostCommentDto[] | null>(
+    null
+  );
+
+  useEffect(() => {
+    apiFetch(`/api/v1/posts/${id}/comments`)
+      .then(setPostComments)
+      .catch((error) => {
+        alert(`${error.resultCode} : ${error.msg}`);
+      });
+  }, []);
+
+  const deleteComment = (
+    id: number,
+    commentId: number,
+    onSuccess: (data: any) => void
+  ) => {
+    apiFetch(`/api/v1/posts/${id}/comments/${commentId}`, {
+      method: "DELETE",
+    }).then((data) => {
+      if (postComments == null) return;
+
+      setPostComments(postComments.filter((c) => c.id != commentId));
+
+      onSuccess(data);
+    });
+  };
+
+  const writeComment = (
+    id: number,
+    content: string,
+    onSuccess: (data: any) => void
+  ) => {
+    apiFetch(`/api/v1/posts/${id}/comments`, {
+      method: "POST",
+      body: JSON.stringify({
+        content,
+      }),
+    }).then((data) => {
+      if (postComments == null) return;
+
+      setPostComments([...postComments, data.data]);
+
+      onSuccess(data);
+    });
+  };
+
+  return {
+    postComments,
+    deleteComment,
+    writeComment,
+  };
+}
+
 function PostInfo({
   post,
   deletePost,
@@ -67,24 +122,22 @@ function PostInfo({
 function PostCommentWriteAndList({
   id,
   postComments,
-  setPostComments,
+  deleteComment,
+  writeComment,
 }: {
   id: number;
   postComments: PostCommentDto[] | null;
-  setPostComments: (postComments: PostCommentDto[]) => void;
+  deleteComment: (
+    id: number,
+    commentId: number,
+    onSuccess: (data: any) => void
+  ) => void;
+  writeComment: (
+    id: number,
+    content: string,
+    onSuccess: (data: any) => void
+  ) => void;
 }) {
-  const deleteComment = (id: number, commentId: number) => {
-    apiFetch(`/api/v1/posts/${id}/comments/${commentId}`, {
-      method: "DELETE",
-    }).then((data) => {
-      alert(data.msg);
-
-      if (postComments == null) return;
-
-      setPostComments(postComments.filter((c) => c.id != commentId));
-    });
-  };
-
   const handleCommentWriteFormSubmit = (
     e: React.FormEvent<HTMLFormElement>
   ) => {
@@ -110,18 +163,9 @@ function PostCommentWriteAndList({
       return;
     }
 
-    apiFetch(`/api/v1/posts/${id}/comments`, {
-      method: "POST",
-      body: JSON.stringify({
-        content: contentTextarea.value,
-      }),
-    }).then((data) => {
+    writeComment(id, contentTextarea.value, (data) => {
       alert(data.msg);
       contentTextarea.value = "";
-
-      if (postComments == null) return;
-
-      setPostComments([...postComments, data.data]);
     });
   };
 
@@ -159,7 +203,9 @@ function PostCommentWriteAndList({
                 className="p-2 rounded border"
                 onClick={() =>
                   confirm(`${comment.id}번 댓글을 정말로 삭제하시겠습니까?`) &&
-                  deleteComment(id, comment.id)
+                  deleteComment(id, comment.id, (data) => {
+                    alert(data.msg);
+                  })
                 }
               >
                 삭제
@@ -177,17 +223,7 @@ export default function Page({ params }: { params: Promise<{ id: number }> }) {
 
   const { post, deletePost } = usePost(id);
 
-  const [postComments, setPostComments] = useState<PostCommentDto[] | null>(
-    null
-  );
-
-  useEffect(() => {
-    apiFetch(`/api/v1/posts/${id}/comments`)
-      .then(setPostComments)
-      .catch((error) => {
-        alert(`${error.resultCode} : ${error.msg}`);
-      });
-  }, []);
+  const { postComments, deleteComment, writeComment } = usePostComments(id);
 
   if (post == null) return <div>로딩중...</div>;
 
@@ -200,7 +236,8 @@ export default function Page({ params }: { params: Promise<{ id: number }> }) {
       <PostCommentWriteAndList
         id={id}
         postComments={postComments}
-        setPostComments={setPostComments}
+        deleteComment={deleteComment}
+        writeComment={writeComment}
       />
     </>
   );
