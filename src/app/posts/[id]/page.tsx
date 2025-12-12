@@ -43,7 +43,6 @@ function usePostComments(id: number) {
   }, []);
 
   const deleteComment = (
-    id: number,
     commentId: number,
     onSuccess: (data: any) => void
   ) => {
@@ -59,7 +58,6 @@ function usePostComments(id: number) {
   };
 
   const writeComment = (
-    id: number,
     content: string,
     onSuccess: (data: any) => void
   ) => {
@@ -78,6 +76,7 @@ function usePostComments(id: number) {
   };
 
   return {
+    id,
     postComments,
     deleteComment,
     writeComment,
@@ -123,13 +122,11 @@ function PostInfo({ postState }: { postState: ReturnType<typeof usePost> }) {
 }
 
 function PostCommentWrite({
-  id,
   postCommentsState,
 }: {
-  id: number;
   postCommentsState: ReturnType<typeof usePostComments>
 }) {
-  const { writeComment } = postCommentsState;
+  const { id, writeComment } = postCommentsState;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -153,48 +150,52 @@ function PostCommentWrite({
       return;
     }
 
-    writeComment(id, contentTextarea.value, (data) => {
+    writeComment(contentTextarea.value, (data) => {
       alert(data.msg);
       contentTextarea.value = "";
     });
   };
 
   return (
-    <form className="p-2 flex gap-2 border-b border-gray-300 pb-6" onSubmit={handleSubmit}>
-      <textarea
-        className="border p-2 rounded flex-1"
-        name="content"
-        placeholder="댓글 내용"
-        maxLength={100}
-        rows={5}
-      />
-      <button className="p-2 rounded border w-24 hover:bg-gray-100" type="submit">
-        작성
-      </button>
-    </form>
+    <>
+      <h2>{id}번 글에 대한 댓글 작성</h2>
+      <form className="p-2 flex gap-2 border-b border-gray-300 pb-6" onSubmit={handleSubmit}>
+        <textarea
+          className="border p-2 rounded flex-1"
+          name="content"
+          placeholder="댓글 내용"
+          maxLength={100}
+          rows={5}
+        />
+        <button className="p-2 rounded border w-24 hover:bg-gray-100" type="submit">
+          작성
+        </button>
+      </form>
+    </>
+
   );
 }
 
 function PostCommentList({
-  id,
+
   postCommentsState,
 }: {
-  id: number;
+
   postCommentsState: ReturnType<typeof usePostComments>
 }) {
-  const { postComments, deleteComment: _deleteComment } = postCommentsState;
+  const { id, postComments, deleteComment: _deleteComment } = postCommentsState;
 
   const deleteComment = (commentId: number) => {
     if (!confirm(`${commentId}번 댓글을 정말로 삭제하시겠습니까?`)) return;
 
-    _deleteComment(id, commentId, (data) => {
+    _deleteComment(commentId, (data) => {
       alert(data.msg);
     });
   };
 
   return (
     <>
-      <h2>댓글 목록</h2>
+      <h2>{id}번 글에 대한 댓글 목록</h2>
 
       {
         postComments != null && postComments.length == 0 && (
@@ -237,16 +238,16 @@ function PostCommentWriteAndList({
   const deleteComment = (commentId: number) => {
     if (!confirm(`${commentId}번 댓글을 정말로 삭제하시겠습니까?`)) return;
 
-    _deleteComment(id, commentId, (data) => {
+    _deleteComment(commentId, (data) => {
       alert(data.msg);
     });
   };
 
   return (
     <>
-      <PostCommentWrite id={id} postCommentsState={postCommentsState} />
+      <PostCommentWrite postCommentsState={postCommentsState} />
 
-      <PostCommentList id={id} postCommentsState={postCommentsState} />
+      <PostCommentList postCommentsState={postCommentsState} />
     </>
   );
 }
