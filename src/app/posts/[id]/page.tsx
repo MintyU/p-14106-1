@@ -29,13 +29,13 @@ function usePost(id: number) {
   };
 }
 
-function usePostComments(id: number) {
+function usePostComments(postId: number) {
   const [postComments, setPostComments] = useState<PostCommentDto[] | null>(
     null
   );
 
   useEffect(() => {
-    apiFetch(`/api/v1/posts/${id}/comments`)
+    apiFetch(`/api/v1/posts/${postId}/comments`)
       .then(setPostComments)
       .catch((error) => {
         alert(`${error.resultCode} : ${error.msg}`);
@@ -46,7 +46,7 @@ function usePostComments(id: number) {
     commentId: number,
     onSuccess: (data: any) => void
   ) => {
-    apiFetch(`/api/v1/posts/${id}/comments/${commentId}`, {
+    apiFetch(`/api/v1/posts/${postId}/comments/${commentId}`, {
       method: "DELETE",
     }).then((data) => {
       if (postComments == null) return;
@@ -61,7 +61,7 @@ function usePostComments(id: number) {
     content: string,
     onSuccess: (data: any) => void
   ) => {
-    apiFetch(`/api/v1/posts/${id}/comments`, {
+    apiFetch(`/api/v1/posts/${postId}/comments`, {
       method: "POST",
       body: JSON.stringify({
         content,
@@ -76,7 +76,7 @@ function usePostComments(id: number) {
   };
 
   return {
-    id,
+    postId,
     postComments,
     deleteComment,
     writeComment,
@@ -126,7 +126,7 @@ function PostCommentWrite({
 }: {
   postCommentsState: ReturnType<typeof usePostComments>
 }) {
-  const { id, writeComment } = postCommentsState;
+  const { postId, writeComment } = postCommentsState;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -158,7 +158,7 @@ function PostCommentWrite({
 
   return (
     <>
-      <h2>{id}번 글에 대한 댓글 작성</h2>
+      <h2>{postId}번 글에 대한 댓글 작성</h2>
       <form className="p-2 flex gap-2 border-b border-gray-300 pb-6" onSubmit={handleSubmit}>
         <textarea
           className="border p-2 rounded flex-1"
@@ -183,7 +183,7 @@ function PostCommentList({
 
   postCommentsState: ReturnType<typeof usePostComments>
 }) {
-  const { id, postComments, deleteComment: _deleteComment } = postCommentsState;
+  const { postId, postComments, deleteComment: _deleteComment } = postCommentsState;
 
   const deleteComment = (commentId: number) => {
     if (!confirm(`${commentId}번 댓글을 정말로 삭제하시겠습니까?`)) return;
@@ -195,7 +195,7 @@ function PostCommentList({
 
   return (
     <>
-      <h2>{id}번 글에 대한 댓글 목록</h2>
+      <h2>{postId}번 글에 대한 댓글 목록</h2>
 
       {
         postComments != null && postComments.length == 0 && (
@@ -225,10 +225,10 @@ function PostCommentList({
 }
 
 function PostCommentWriteAndList({
-  id,
+  postId,
   postCommentsState,
 }: {
-  id: number;
+  postId: number;
   postCommentsState: ReturnType<typeof usePostComments>
 }) {
   const { postComments, deleteComment: _deleteComment } = postCommentsState;
@@ -268,7 +268,7 @@ export default function Page() {
       <PostInfo postState={postState} />
 
       <PostCommentWriteAndList
-        id={id}
+        postId={id}
         postCommentsState={postCommentsState}
       />
     </>
